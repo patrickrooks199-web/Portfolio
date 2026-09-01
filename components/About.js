@@ -29,11 +29,11 @@ export default function About() {
           </div>
           <div className="tag__row">
             <span>School</span>
-            <span>Purdue University</span>
+            <span>Texas A&M University</span>
           </div>
           <div className="tag__row">
             <span>Grad.</span>
-            <span>May 2027</span>
+            <span>May 2029</span>
           </div>
           <div className="tag__row">
             <span>CAD</span>
