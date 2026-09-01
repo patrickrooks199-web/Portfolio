@@ -15,8 +15,8 @@ export default function Contact() {
             <div className="signblock__row">
               <div className="signblock__label">Email</div>
               <div className="signblock__value">
-                <a href="mailto:jordan.reyes@example.com">
-                  jordan.reyes@example.com
+                <a href="mailto:patrickrooks199@gmail.com">
+                  patrickrooks199@gmail.com
                 </a>
               </div>
             </div>
