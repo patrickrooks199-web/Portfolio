@@ -9,8 +9,8 @@ export default function Hero() {
 
         <div className="hero__body wrap" style={{ paddingLeft: 0, paddingRight: 0 }}>
           <div>
-            <div className="hero__eyebrow">Manufacturing Engineering Student</div>
-            <h1 className="hero__name">Jordan Reyes</h1>
+            <div className="hero__eyebrow">Manufacturing and Mechanical Engineering Technology Student</div>
+            <h1 className="hero__name">Patrick Rooks</h1>
             <p className="hero__role">
               I design for manufacturability and build the tooling, fixtures,
               and processes that get a part from CAD to production —
