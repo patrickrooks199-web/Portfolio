@@ -1,9 +1,9 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Jordan Reyes — Manufacturing Engineering",
+  title: "Patrick Rooks",
   description:
-    "Portfolio of Jordan Reyes, manufacturing engineering student specializing in CNC machining, DFM, and process optimization.",
+    "Portfolio of Patrick Rooks, manufacturing and mechanical engineering technology student.",
 };
 
 export default function RootLayout({ children }) {
