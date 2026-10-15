@@ -4,11 +4,9 @@ export default function Contact() {
       <div className="wrap">
         <div className="contact__inner">
           <span className="section-label">Contact</span>
-          <h2>Let's talk shop.</h2>
+          <h2>Corny one liner</h2>
           <p className="contact__lede">
-            Looking for a manufacturing or process engineering internship for
-            summer 2027. Reach out if you're hiring, or if you just want to
-            talk tolerances.
+            I WANT A JOB
           </p>
 
           <div className="signblock">
@@ -24,11 +22,11 @@ export default function Contact() {
               <div className="signblock__label">LinkedIn</div>
               <div className="signblock__value">
                 <a
-                  href="https://linkedin.com/in/jordanreyes"
+                  href="https://linkedin.com/in/patrick-rooks-a8b653424"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  linkedin.com/in/jordanreyes
+                  linkedin.com/in/patrick-rooks-a8b653424
                 </a>
               </div>
             </div>
@@ -49,7 +47,7 @@ export default function Contact() {
       </div>
 
       <div className="footer">
-        © {new Date().getFullYear()} Jordan Reyes — Drawn to specification.
+        © {new Date().getFullYear()} Footer text.
       </div>
     </section>
   );

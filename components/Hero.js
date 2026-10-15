@@ -14,17 +14,14 @@ export default function Hero() {
             </div>
             <h1 className="hero__name">Patrick Rooks</h1>
             <p className="hero__role">
-              I design for manufacturability and build the fixtures,
-              processes, and hardware that get a part from CAD to something
-              real — currently studying at [your school], focused on
-              [your focus area].
+              DESCRIPTION.
             </p>
             <div className="hero__actions">
               <a className="btn btn--primary" href="#projects">
                 View projects
               </a>
               <a className="btn btn--ghost" href="#contact">
-                Get in touch
+                I DON'T KNOW WHAT TO PUT HERE
               </a>
             </div>
           </div>
