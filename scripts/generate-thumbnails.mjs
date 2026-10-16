@@ -1,5 +1,6 @@
-// Renders the first page of every PDF in public/projects/ to a PNG thumbnail
-// in public/projects/thumbs/. Runs automatically before `npm run dev` and
+// Renders the first page of every PDF in public/projects/ (including PDFs
+// inside subfolders) to a PNG thumbnail in public/projects/thumbs/, mirroring
+// the same folder structure. Runs automatically before `npm run dev` and
 // `npm run build`, or on demand with `npm run thumbs`.
 //
 // This script never fails the build. If a PDF can't be rendered, that project
@@ -24,26 +25,40 @@ const pngSize = (buf) => ({
   height: buf.readUInt32BE(20),
 });
 
-async function main() {
-  let files;
+// Finds every PDF under public/projects, remembering which folders it is in.
+async function findPdfs(dir = PROJECTS_DIR, folders = []) {
+  let entries;
   try {
-    files = (await fs.readdir(PROJECTS_DIR)).filter(isPdf);
+    entries = await fs.readdir(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const found = [];
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      if (folders.length === 0 && entry.name === "thumbs") continue;
+      found.push(
+        ...(await findPdfs(path.join(dir, entry.name), [...folders, entry.name]))
+      );
+    } else if (isPdf(entry.name)) {
+      found.push({ name: entry.name, folders });
+    }
+  }
+  return found;
+}
+
+async function main() {
+  try {
+    await fs.access(PROJECTS_DIR);
   } catch {
     console.log("[thumbnails] No public/projects folder found, skipping.");
     return;
   }
 
-  await fs.mkdir(THUMBS_DIR, { recursive: true });
-
-  // Remove thumbnails whose PDF has been deleted or renamed.
-  const wanted = new Set(files.map((f) => `${baseName(f)}.png`));
-  for (const existing of await fs.readdir(THUMBS_DIR)) {
-    if (existing.endsWith(".png") && !wanted.has(existing)) {
-      await fs.rm(path.join(THUMBS_DIR, existing));
-    }
-  }
-
-  if (files.length === 0) {
+  const pdfs = await findPdfs();
+  if (pdfs.length === 0) {
+    await fs.rm(THUMBS_DIR, { recursive: true, force: true });
     console.log("[thumbnails] No PDFs found in public/projects.");
     return;
   }
@@ -60,28 +75,31 @@ async function main() {
     return;
   }
 
+  // Start fresh so thumbnails for deleted or moved PDFs don't linger.
+  await fs.rm(THUMBS_DIR, { recursive: true, force: true });
+
   let made = 0;
-  for (const file of files) {
-    const pdfPath = path.join(PROJECTS_DIR, file);
-    const outPath = path.join(THUMBS_DIR, `${baseName(file)}.png`);
+  for (const { name, folders } of pdfs) {
+    const label = [...folders, name].join("/");
+    const pdfPath = path.join(PROJECTS_DIR, ...folders, name);
+    const outPath = path.join(THUMBS_DIR, ...folders, `${baseName(name)}.png`);
     try {
       // First pass at scale 1 only tells us the page size...
       const probe = await pdf(pdfPath, { scale: 1 });
-      const probePng = await probe.getPage(1);
-      const { width, height } = pngSize(probePng);
+      const { width, height } = pngSize(await probe.getPage(1));
 
       // ...second pass renders at the scale that hits the target size.
       const scale = TARGET_LONG_SIDE / Math.max(width, height);
       const doc = await pdf(pdfPath, { scale });
+      await fs.mkdir(path.dirname(outPath), { recursive: true });
       await fs.writeFile(outPath, await doc.getPage(1));
       made++;
     } catch (err) {
-      await fs.rm(outPath, { force: true });
-      console.warn(`[thumbnails] Skipped "${file}": ${err.message}`);
+      console.warn(`[thumbnails] Skipped "${label}": ${err.message}`);
     }
   }
 
-  console.log(`[thumbnails] ${made} of ${files.length} thumbnail(s) generated.`);
+  console.log(`[thumbnails] ${made} of ${pdfs.length} thumbnail(s) generated.`);
 }
 
 main().catch((err) => {
