@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+       "dev": "node scripts/generate-thumbnails.mjs && next dev",
+   "build": "node scripts/generate-thumbnails.mjs && next build",
+   "thumbs": "node scripts/generate-thumbnails.mjs",
     "start": "next start",
     "lint": "eslint"
   },

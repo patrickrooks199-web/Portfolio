@@ -1,34 +1,44 @@
-const projects = [
-  {
-    no: "SHEET 01",
-    title: "CNC-Machined Steering Upright",
-    description:
-      "Redesigned our formula racing team's front upright to cut machining time by 40%, consolidating four fixtures into one and simplifying toolpaths without losing stiffness.",
-    material: "7075-T6 Aluminum",
-    process: "3-Axis CNC Milling",
-    date: "Mar 2026",
-  },
-  {
-    no: "SHEET 02",
-    title: "Injection-Molded Enclosure DFM Study",
-    description:
-      "Ran a full design-for-manufacturability pass on a sensor housing for a course capstone, resolving undercuts and wall-thickness issues before tooling was cut.",
-    material: "ABS",
-    process: "Injection Molding",
-    date: "Nov 2025",
-  },
-  {
-    no: "SHEET 03",
-    title: "Assembly Line Rebalance",
-    description:
-      "Time-studied a six-station mock assembly line for a lean manufacturing project, rebalancing workload to cut cycle-time variance by 22% across stations.",
-    material: "N/A",
-    process: "Lean / Line Balancing",
-    date: "Sep 2025",
-  },
-];
+import fs from "node:fs";
+import path from "node:path";
+
+// Drop PDFs into public/projects/ and they show up here automatically.
+// Thumbnails are generated into public/projects/thumbs/ by
+// scripts/generate-thumbnails.mjs (it runs before dev and build).
+const PROJECTS_DIR = path.join(process.cwd(), "public", "projects");
+const THUMBS_DIR = path.join(PROJECTS_DIR, "thumbs");
+
+function getProjects() {
+  let files;
+  try {
+    files = fs.readdirSync(PROJECTS_DIR);
+  } catch {
+    return []; // folder doesn't exist yet
+  }
+
+  return files
+    .filter((file) => /\.pdf$/i.test(file))
+    .sort((a, b) =>
+      // Natural order, so "Project 2" comes before "Project 10".
+      a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+    )
+    .map((file, index) => {
+      const title = file.replace(/\.pdf$/i, "");
+      const hasThumb = fs.existsSync(path.join(THUMBS_DIR, `${title}.png`));
+      return {
+        no: `SHEET ${String(index + 1).padStart(2, "0")}`,
+        title,
+        href: `/projects/${encodeURIComponent(file)}`,
+        thumb: hasThumb
+          ? `/projects/thumbs/${encodeURIComponent(title)}.png`
+          : null,
+      };
+    });
+}
 
 export default function Projects() {
+  const projects = getProjects();
+  const count = String(projects.length).padStart(2, "0");
+
   return (
     <section className="projects" id="projects">
       <div className="wrap">
@@ -37,34 +47,40 @@ export default function Projects() {
             <span className="section-label">Selected Work</span>
             <h2>Projects</h2>
           </div>
-          <div className="projects__count">03 SHEETS ON FILE</div>
+          <div className="projects__count">
+            {count} {projects.length === 1 ? "SHEET" : "SHEETS"} ON FILE
+          </div>
         </div>
 
-        <div className="sheets">
-          {projects.map((p) => (
-            <article className="sheet" key={p.no}>
-              <div className="sheet__no">{p.no}</div>
-              <div className="sheet__body">
-                <h3>{p.title}</h3>
-                <p>{p.description}</p>
-              </div>
-              <dl className="sheet__titleblock">
-                <div className="sheet__tb-row">
-                  <dt>Material</dt>
-                  <dd>{p.material}</dd>
-                </div>
-                <div className="sheet__tb-row">
-                  <dt>Process</dt>
-                  <dd>{p.process}</dd>
-                </div>
-                <div className="sheet__tb-row">
-                  <dt>Date</dt>
-                  <dd>{p.date}</dd>
-                </div>
-              </dl>
-            </article>
-          ))}
-        </div>
+        {projects.length === 0 ? (
+          <p className="projects__empty">
+            No projects yet. Add PDF files to <code>public/projects</code>.
+          </p>
+        ) : (
+          <div className="sheets">
+            {projects.map((p) => (
+              <article className="sheet" key={p.href}>
+                <div className="sheet__no">{p.no}</div>
+                <a
+                  className="sheet__link"
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="sheet__thumb">
+                    {p.thumb ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.thumb} alt="" loading="lazy" />
+                    ) : (
+                      <span className="sheet__thumb-empty">PDF</span>
+                    )}
+                  </div>
+                  <h3 className="sheet__title">{p.title}</h3>
+                </a>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
