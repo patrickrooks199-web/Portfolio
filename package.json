@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-       "dev": "node scripts/generate-thumbnails.mjs && next dev",
-   "build": "node scripts/generate-thumbnails.mjs && next build",
-   "thumbs": "node scripts/generate-thumbnails.mjs",
+    "dev": "node scripts/generate-thumbnails.mjs && next dev",
+    "build": "node scripts/generate-thumbnails.mjs && next build",
+    "thumbs": "node scripts/generate-thumbnails.mjs",
     "start": "next start",
     "lint": "eslint"
   },
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "eslint": "^9",
-    "eslint-config-next": "16.3.4"
+    "eslint-config-next": "16.3.4",
+    "pdf-to-img": "5.0.0"
   }
 }
